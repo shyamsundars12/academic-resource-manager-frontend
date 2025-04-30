@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, Link as RouterLink } from 'react-router-dom';
 import {
   Box,
   Container,
@@ -7,13 +7,12 @@ import {
   Button,
   Typography,
   Paper,
-  Link,
   InputAdornment,
   IconButton,
   CircularProgress,
   Alert,
   useTheme,
-  useMediaQuery,
+  // useMediaQuery,
   Grid,
 } from '@mui/material';
 import {
@@ -25,10 +24,19 @@ import {
 } from '@mui/icons-material';
 import { authService } from '../services/api';
 
+interface ApiError {
+  response?: {
+    data?: {
+      message?: string;
+    };
+  };
+  message?: string;
+}
+
 const Login: React.FC = () => {
   const theme = useTheme();
-  const isDesktop = useMediaQuery(theme.breakpoints.up('lg'));
-  const isLaptop = useMediaQuery(theme.breakpoints.up('md'));
+  // const isDesktop = useMediaQuery(theme.breakpoints.up('lg'));
+  // const isLaptop = useMediaQuery(theme.breakpoints.up('md'));
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -71,12 +79,13 @@ const Login: React.FC = () => {
             navigate('/login');
         }
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const error = err as ApiError;
       // Handle specific error messages from the backend
-      if (err.response?.data?.message?.includes('not yet approved')) {
+      if (error.response?.data?.message?.includes('not yet approved')) {
         setError('Your account is pending approval. Please wait for admin approval before logging in.');
       } else {
-        setError(err.response?.data?.message || 'Invalid username or password');
+        setError(error.response?.data?.message || 'Invalid username or password');
       }
     } finally {
       setLoading(false);
@@ -350,19 +359,16 @@ const Login: React.FC = () => {
                     sx={{ mt: 2 }}
                   >
                     Don't have an account?{' '}
-                    <Link
-                      href="/register"
-                      sx={{
-                        color: 'primary.main',
+                    <RouterLink
+                      to="/register"
+                      style={{
+                        color: theme.palette.primary.main,
                         textDecoration: 'none',
                         fontWeight: 600,
-                        '&:hover': {
-                          textDecoration: 'underline',
-                        },
                       }}
                     >
                       Register here
-                    </Link>
+                    </RouterLink>
                   </Typography>
                 </Box>
               </form>

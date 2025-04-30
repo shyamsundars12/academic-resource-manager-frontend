@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import {
   Box,
   Container,
@@ -16,9 +16,8 @@ import {
   IconButton,
   CircularProgress,
   useTheme,
-  useMediaQuery,
   Grid,
-  Link,
+  SelectChangeEvent,
 } from '@mui/material';
 import {
   Visibility,
@@ -31,17 +30,10 @@ import {
   Business as BusinessIcon,
 } from '@mui/icons-material';
 import { authService } from '../services/api';
-
-interface RegisterResponse {
-  data: {
-    message: string;
-  };
-}
-
 const Register: React.FC = () => {
   const theme = useTheme();
-  const isDesktop = useMediaQuery(theme.breakpoints.up('lg'));
-  const isLaptop = useMediaQuery(theme.breakpoints.up('md'));
+  // const isDesktop = useMediaQuery(theme.breakpoints.up('lg'));
+  // const isLaptop = useMediaQuery(theme.breakpoints.up('md'));
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     username: '',
@@ -53,7 +45,6 @@ const Register: React.FC = () => {
     studentId: '',
   });
   const [error, setError] = useState('');
-  const [success, setSuccess] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -66,7 +57,7 @@ const Register: React.FC = () => {
     if (error) setError('');
   };
 
-  const handleRoleChange = (event: any) => {
+  const handleRoleChange = (event: SelectChangeEvent<string>) => {
     setFormData(prev => ({
       ...prev,
       role: event.target.value
@@ -282,21 +273,6 @@ const Register: React.FC = () => {
                 </Alert>
               )}
 
-              {success && (
-                <Alert
-                  severity="success"
-                  sx={{
-                    mb: 3,
-                    borderRadius: 2,
-                    '& .MuiAlert-icon': {
-                      fontSize: '1.5rem',
-                    },
-                  }}
-                >
-                  Registration successful! Redirecting to login...
-                </Alert>
-              )}
-
               <form onSubmit={handleSubmit}>
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
                   <TextField
@@ -500,19 +476,16 @@ const Register: React.FC = () => {
                     sx={{ mt: 2 }}
                   >
                     Already have an account?{' '}
-                    <Link
-                      href="/login"
-                      sx={{
-                        color: 'primary.main',
+                    <RouterLink
+                      to="/login"
+                      style={{
+                        color: theme.palette.primary.main,
                         textDecoration: 'none',
                         fontWeight: 600,
-                        '&:hover': {
-                          textDecoration: 'underline',
-                        },
                       }}
                     >
                       Sign in here
-                    </Link>
+                    </RouterLink>
                   </Typography>
                 </Box>
               </form>
